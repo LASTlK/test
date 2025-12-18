@@ -1,0 +1,117 @@
+/* --- НОВОСТИ: Главная карточка --- */
+.card .card-body img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Карточки в правом блоке (две маленькие) --- */
+.col-5 img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Кнопка "Добавить новость" --- */
+.btn-link {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  color: #AA8144;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-link:hover {
+  text-decoration: none;
+  color: #886128;
+}
+
+/* --- Форма добавления/редактирования --- */
+.form-control,
+.form-select {
+  border-color: #886128;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(136, 97, 40, 0.25);
+  border-color: #886128;
+}
+
+/* --- Кнопки формы --- */
+.btn-rounded {
+  border-radius: 25px;
+}
+
+.btn-danger,
+.btn-secondary,
+.btn-warning {
+  border-radius: 25px;
+}
+
+/* --- Кнопка "Прикрепить изображение" --- */
+.btn-warning {
+  background-color: #FFECB3;
+  border-color: #FFECB3;
+  color: #886128;
+}
+
+.btn-warning:hover {
+  background-color: #FFE082;
+  border-color: #FFE082;
+}
+
+/* --- Иконка плюс --- */
+.plus-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+/* --- Эффекты наведения --- */
+.hover-shadow:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* --- Заголовок "Лента новостей" --- */
+h3.fw-bold {
+  background-color: #F9E5C8;
+  padding: 10px 20px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+/* --- Убираем автора из карточек --- */
+.card-body .text-muted:last-child {
+  display: none;
+}
+
+/* --- Категории в карточках --- */
+.badge.bg-light.text-dark {
+  background-color: #FFF4E5 !important;
+  color: #886128 !important;
+  border: 1px solid #FFECB3;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* --- Для адаптивности --- */
+@media (max-width: 768px) {
+  .col-lg-6 {
+    width: 100%;
+  }
+  
+  .col-5 {
+    width: 100%;
+  }
+  
+  .col-7 {
+    width: 100%;
+  }
+}
