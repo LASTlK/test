@@ -108,6 +108,22 @@ h3.fw-bold {
   padding: 0.25rem 0.5rem;
 }
 
+/* --- Цвета заголовков и текста новостей --- */
+.card-title {
+  color: #886128 !important;
+}
+
+.card-text {
+  color: #AA8144 !important;
+}
+
+/* --- Выравнивание текста по центру в карточках --- */
+.card-body .card-title,
+.card-body .card-text,
+.card-body .text-muted {
+  text-align: center;
+}
+
 /* --- Для адаптивности --- */
 @media (max-width: 768px) {
   .col-lg-6 {

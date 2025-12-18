@@ -107,12 +107,14 @@ const NewsPage = () => {
       formDataToSend.append('category', formData.category);
       formDataToSend.append('is_published', formData.is_published);
       
+      // 👇 Исправление: если image === null, но мы редактируем — не отправляем пустую строку, а оставляем текущее
       if (formData.image instanceof File) {
         formDataToSend.append('image', formData.image);
         console.log('📤 Добавляем изображение в FormData:', formData.image.name);
       } else if (editingNews && formData.image === null) {
-        // При редактировании, если image установлен в null - удаляем изображение
-        formDataToSend.append('image', '');
+        // ❗ Не удаляем изображение при редактировании, если не выбрано новое
+        // Оставляем как есть — Django сам сохранит старое
+        // formDataToSend.append('image', ''); // Это было ошибкой!
       }
       
       console.log('📨 Отправляем данные...');
@@ -228,7 +230,7 @@ const NewsPage = () => {
     setFormData({
       title: news.title,
       content: news.content,
-      image: null, // Не передаем файл при редактировании
+      image: null, // Не передаем файл при редактировании — это важно для сохранения текущего изображения
       category: news.category || "general",
       is_published: news.is_published,
     });
@@ -602,7 +604,7 @@ const NewsPage = () => {
             {newsList.length > 0 && (
               <div className="row mb-5">
                 <div className="col-lg-6 mb-4 mb-lg-0">
-                  <div className="card border-0 shadow h-100">
+                  <div className="card border-0 shadow h-100 d-flex flex-column">
                     <div style={{ height: '350px', overflow: 'hidden' }}>
                       <img
                         src={getImageUrl(newsList[0])}
@@ -617,9 +619,11 @@ const NewsPage = () => {
                         }}
                       />
                     </div>
-                    <div className="card-body">
-                      <h2 className="card-title fw-bold">{newsList[0].title}</h2>
-                      <p className="card-text">{newsList[0].content}</p>
+                    <div className="card-body d-flex flex-column justify-content-between flex-grow-1">
+                      <div>
+                        <h2 className="card-title fw-bold text-center" style={{ color: '#886128' }}>{newsList[0].title}</h2>
+                        <p className="card-text text-center" style={{ color: '#AA8144' }}>{newsList[0].content}</p>
+                      </div>
                       <div className="d-flex justify-content-between align-items-center mt-4">
                         <div>
                           <span className="badge bg-warning text-dark me-2">
@@ -641,7 +645,7 @@ const NewsPage = () => {
                     <div className="row g-4 h-100">
                       {newsList.slice(1, 3).map((news, idx) => (
                         <div key={news.id} className="col-12">
-                          <div className="card border-0 shadow h-100">
+                          <div className="card border-0 shadow h-100 d-flex flex-column">
                             <div className="row g-0 h-100">
                               <div className="col-5">
                                 <div style={{ height: '150px', overflow: 'hidden' }}>
@@ -660,11 +664,13 @@ const NewsPage = () => {
                                 </div>
                               </div>
                               <div className="col-7">
-                                <div className="card-body h-100 d-flex flex-column">
-                                  <h5 className="card-title fw-bold">{news.title}</h5>
-                                  <p className="card-text small flex-grow-1">
-                                    {news.content.substring(0, 100)}...
-                                  </p>
+                                <div className="card-body h-100 d-flex flex-column justify-content-between">
+                                  <div>
+                                    <h5 className="card-title fw-bold text-center" style={{ color: '#886128' }}>{news.title}</h5>
+                                    <p className="card-text small text-center" style={{ color: '#AA8144' }}>
+                                      {news.content.substring(0, 100)}...
+                                    </p>
+                                  </div>
                                   <div className="d-flex justify-content-between align-items-center mt-2">
                                     <small className="text-muted">
                                       {news.category === 'general' ? 'Общие' :
@@ -725,7 +731,7 @@ const NewsPage = () => {
                 <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
                   {newsList.map((news) => (
                     <div key={news.id} className="col">
-                      <div className="card h-100 border-0 shadow-sm hover-shadow">
+                      <div className="card h-100 border-0 shadow-sm hover-shadow d-flex flex-column">
                         <div 
                           style={{ 
                             height: '200px', 
@@ -764,11 +770,13 @@ const NewsPage = () => {
                             </button>
                           )}
                         </div>
-                        <div className="card-body d-flex flex-column">
-                          <h6 className="card-title fw-bold">{news.title}</h6>
-                          <p className="card-text small text-muted flex-grow-1">
-                            {news.content.length > 120 ? `${news.content.substring(0, 120)}...` : news.content}
-                          </p>
+                        <div className="card-body d-flex flex-column justify-content-between flex-grow-1">
+                          <div>
+                            <h6 className="card-title fw-bold text-center" style={{ color: '#886128' }}>{news.title}</h6>
+                            <p className="card-text small text-center" style={{ color: '#AA8144' }}>
+                              {news.content.length > 120 ? `${news.content.substring(0, 120)}...` : news.content}
+                            </p>
+                          </div>
                           <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                             <div>
                               <span className="badge bg-light text-dark me-2">
