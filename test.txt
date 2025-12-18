@@ -493,7 +493,8 @@ const NewsPage = () => {
           <Sidebar />
           <main className="news-content-main" style={mainContentStyle}>
             <div className="container-fluid p-4">
-              <div className="d-flex align-items-center mb-4">
+              {/* Заголовок формы — по центру */}
+              <div className="d-flex justify-content-center align-items-center mb-4">
                 <img src={NewsIcon} alt="Новости" style={{ width: "32px", height: "32px" }} className="me-3" />
                 <h1 className="fw-bold" style={{ color: '#886128' }}>НОВОСТИ</h1>
               </div>
@@ -585,7 +586,11 @@ const NewsPage = () => {
                 <button
                   className="btn btn-link d-flex align-items-center px-4 py-2"
                   onClick={() => setIsAddingNews(true)}
-                  style={{ color: '#AA8144' }}
+                  style={{ 
+                    color: '#AA8144',
+                    textDecoration: 'none',
+                    fontSize: '1.1rem'
+                  }}
                 >
                   <img src={PlusIcon} alt="+" className="me-2" style={{ width: '20px', height: '20px' }} />
                   Добавить новость
@@ -684,7 +689,14 @@ const NewsPage = () => {
             {/* Лента новостей */}
             <div className="mt-5">
               <div className="d-flex justify-content-center align-items-center mb-4">
-                <h3 className="fw-bold mb-0" style={{ color: '#886128', backgroundColor: '#F9E5C8', padding: '10px 20px', borderRadius: '5px' }}>
+                <h3 className="fw-bold mb-0" style={{ 
+                  color: '#886128', 
+                  backgroundColor: '#F9E5C8', 
+                  padding: '10px 20px', 
+                  borderRadius: '5px',
+                  width: '100%',
+                  textAlign: 'center'
+                }}>
                   Лента новостей
                 </h3>
               </div>

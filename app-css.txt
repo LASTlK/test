@@ -21,6 +21,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  font-size: 1.1rem; /* Сделали чуть крупнее */
 }
 
 .btn-link:hover {
@@ -57,12 +58,14 @@
 .btn-warning {
   background-color: #FFECB3;
   border-color: #FFECB3;
-  color: #886128;
+  color: #FFA000; /* Цвет текста изменён на #FFA000 */
+  font-weight: bold;
 }
 
 .btn-warning:hover {
   background-color: #FFE082;
   border-color: #FFE082;
+  color: #FF8F00;
 }
 
 /* --- Иконка плюс --- */
@@ -84,7 +87,11 @@ h3.fw-bold {
   background-color: #F9E5C8;
   padding: 10px 20px;
   border-radius: 5px;
-  display: inline-block;
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: #886128;
+  font-weight: bold;
 }
 
 /* --- Убираем автора из карточек --- */
