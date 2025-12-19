@@ -1,0 +1,36 @@
+Топ 5 команд для суперфинал:
+
+SELECT
+    t.name AS team_name,
+    ROUND(AVG(r.points), 2) AS avg_points,
+    COUNT(r.game_id) AS games_played
+FROM teams t
+JOIN results r ON t.team_id = r.team_id
+GROUP BY t.team_id, t.name
+ORDER BY avg_points DESC
+LIMIT 5;
+
+Самые опытные судьи для суперфинал:
+
+SELECT
+    j.full_name,
+    j.experience_years,
+    COUNT(gj.game_id) AS games_judged
+FROM judges j
+JOIN game_judges gj ON j.judge_id = gj.judge_id
+GROUP BY j.judge_id, j.full_name, j.experience_years
+HAVING COUNT(gj.game_id) >= 3
+ORDER BY j.experience_years DESC, games_judged DESC;
+
+Игроки из высшей лиги:
+
+SELECT DISTINCT
+    p.full_name AS player_name,
+    t.name AS team_name,
+    p.position
+FROM players p
+JOIN teams t ON p.team_id = t.team_id
+JOIN results r ON t.team_id = r.team_id
+JOIN games g ON r.game_id = g.game_id
+WHERE g.league = 'Высшая'
+ORDER BY t.name, p.position;

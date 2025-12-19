@@ -1,0 +1,15 @@
+Изменение почты судьи (блокировка gmail):
+
+UPDATE judges
+SET email = 'bocharov.new@example.com'
+WHERE full_name = 'Андрей Бочаров';
+
+Удаление отмененной игры:
+
+DELETE FROM games
+WHERE title = 'Зимний кубок 2024';
+
+Попытка поставить оценку >10, выходит ошибка:
+
+INSERT INTO game_judges (game_id, judge_id, score, comment)
+VALUES (1, 1, 11.0, 'Тестовая оценка');

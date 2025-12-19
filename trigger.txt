@@ -1,0 +1,33 @@
+-- Функция: запрет удаления команды, игравшей в Высшей лиге
+CREATE OR REPLACE FUNCTION prevent_delete_top_team()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Проверяем, участвовала ли команда в Высшей лиге
+    IF EXISTS (
+        SELECT 1
+        FROM results r
+        JOIN games g ON r.game_id = g.game_id
+        WHERE r.team_id = OLD.team_id
+          AND g.league = 'Высшая'
+    ) THEN
+        RAISE EXCEPTION 'Нельзя удалить команду "%", участвовавшую в Высшей лиге!', OLD.name;
+    END IF;
+
+    RETURN OLD; -- разрешить удаление, если проверка пройдена
+END;
+$$ LANGUAGE plpgsql;
+
+-- Триггер: срабатывает перед удалением из teams
+CREATE TRIGGER trg_prevent_delete_top_team
+BEFORE DELETE ON teams
+FOR EACH ROW
+EXECUTE FUNCTION prevent_delete_top_team();
+
+Попытка удалить команду из высшей лиги:
+
+DELETE FROM teams WHERE name = 'Уральские пельмени';
+
+Приведет к результату:
+
+ERROR:  Нельзя удалить команду "Уральские пельмени", участвовавшую в Высшей лиге!
+CONTEXT:  PL/pgSQL function prevent_delete_top_team() line 11 at RAISE 

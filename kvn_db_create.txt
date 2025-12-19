@@ -1,0 +1,69 @@
+-- 1. Таблица: teams
+CREATE TABLE teams (
+    team_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    university VARCHAR(255),
+    city VARCHAR(100) NOT NULL,
+    founded_year INT CHECK (founded_year >= 1960 AND founded_year <= EXTRACT(YEAR FROM CURRENT_DATE)),
+    coach_name VARCHAR(255)
+);
+
+-- 2. Таблица: judges
+CREATE TABLE judges (
+    judge_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    experience_years INT CHECK (experience_years >= 0 AND experience_years <= 50),
+    specialization VARCHAR(100),
+    email VARCHAR(255) UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+);
+
+-- 3. Таблица: players
+CREATE TABLE players (
+    player_id SERIAL PRIMARY KEY,
+    team_id INT NOT NULL REFERENCES teams(team_id) ON DELETE CASCADE,
+    full_name VARCHAR(255) NOT NULL,
+    position VARCHAR(50) DEFAULT 'Участник',
+    birth_date DATE CHECK (birth_date <= CURRENT_DATE),
+    email VARCHAR(255) UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+);
+
+-- 4. Таблица: games
+CREATE TABLE games (
+    game_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    league VARCHAR(100) NOT NULL CHECK (league IN ('Высшая', 'Первая', 'Студенческая', 'Молодёжная', 'Другая')),
+    date_played DATE NOT NULL CHECK (date_played <= CURRENT_DATE),
+    venue VARCHAR(255) NOT NULL,
+    duration_minutes INT CHECK (duration_minutes > 0 AND duration_minutes <= 300)
+);
+
+-- 5. Таблица: results
+CREATE TABLE results (
+    result_id SERIAL PRIMARY KEY,
+    game_id INT NOT NULL REFERENCES games(game_id) ON DELETE CASCADE,
+    team_id INT NOT NULL REFERENCES teams(team_id) ON DELETE CASCADE,
+    points INT NOT NULL CHECK (points >= 0),
+    advanced_to_next BOOLEAN DEFAULT false,
+    place INT CHECK (place >= 1 AND place <= 6),
+    UNIQUE (game_id, team_id)  -- одна команда — один раз в одной игре
+);
+
+-- 6. Таблица: game_judges (оценки судей)
+CREATE TABLE game_judges (
+    game_judge_id SERIAL PRIMARY KEY,
+    game_id INT NOT NULL REFERENCES games(game_id) ON DELETE CASCADE,
+    judge_id INT NOT NULL REFERENCES judges(judge_id) ON DELETE CASCADE,
+    score DECIMAL(3,1) NOT NULL CHECK (score >= 0.0 AND score <= 10.0),
+    comment TEXT,
+    UNIQUE (game_id, judge_id)  -- один судья — одна оценка за игру
+);
+
+-- 7. Таблица: audience_feedback
+CREATE TABLE audience_feedback (
+    feedback_id SERIAL PRIMARY KEY,
+    game_id INT NOT NULL REFERENCES games(game_id) ON DELETE CASCADE,
+    spectator_name VARCHAR(255) DEFAULT 'Аноним',
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    feedback_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
