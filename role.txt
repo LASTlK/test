@@ -1,0 +1,99 @@
+Создание тестовой роли
+
+CREATE ROLE test WITH LOGIN PASSWORD 'test123';
+
+Наделение правами роли test
+
+GRANT SELECT, INSERT, UPDATE ON viewer_feedback TO test;
+
+GRANT SELECT ON game_views TO test;
+
+Наделение права UPDATE на определенные столбцы
+
+GRANT UPDATE (duration_sec, is_live) ON game_views TO test;
+
+----------------
+
+Создание стандартной роли, присвоение прав доступа, назначение роли тестовому пользователю
+
+CREATE ROLE analyst_role;
+
+Создание представления
+
+CREATE OR REPLACE VIEW feedback_simple AS
+SELECT feedback_id, comment, reactions
+FROM viewer_feedback;
+
+GRANT UPDATE (reactions) ON feedback_simple TO analyst_role;
+
+GRANT SELECT ON feedback_simple TO analyst_role;
+
+GRANT analyst_role TO test;
+
+----------------------------
+
+Проверка прав доступа у пользователя test
+
+SET ROLE test;
+
+SELECT * FROM games LIMIT 1; - откажет, нет прав, все верно
+
+SELECT * FROM game_views LIMIT 3; - выведет ответ, права выданы
+
+UPDATE game_views SET duration_sec = 100 WHERE view_id = 1; - все работает, здесь права были выданы
+
+UPDATE game_views SET region = 'US' WHERE view_id = 1; - ошибка, права не выданы, все верно
+
+INSERT INTO viewer_feedback (view_id, comment, reactions, analytics_meta)
+VALUES (1, 'test from role', ARRAY['like'], '{"sentiment":"positive"}'::jsonb); - работает, т.к. права выданы.
+
+Проверка представления:
+UPDATE feedback_simple 
+SET reactions = ARRAY['like', 'laugh'] 
+WHERE feedback_id = 1; - работает, права выданы
+
+UPDATE feedback_simple 
+SET comment = 'Запрещённое обновление' 
+WHERE feedback_id = 1; - ошибка, все верно
+
+
+Смена роли для создания дополнительных представлений.
+
+RESET ROLE;
+
+
+Дополнительные представления:
+
+Упрощение просмотра записей по регионам.
+
+CREATE VIEW views_by_region AS
+SELECT region, COUNT(*) AS views, AVG(duration_sec) AS avg_duration
+FROM game_views
+GROUP BY region;
+
+
+Игры с высокой вовлеченностью зрителей.
+
+CREATE VIEW high_engagement_games AS
+SELECT DISTINCT g.title, g.league
+FROM games g
+JOIN game_views gv ON g.game_id = gv.game_id
+JOIN viewer_feedback vf ON gv.view_id = vf.view_id
+WHERE array_length(vf.reactions, 1) >= 2;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

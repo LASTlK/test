@@ -1,0 +1,34 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- 1. Таблица: game_views (100 млн записей) — БЕЗ PRIMARY KEY
+CREATE TABLE game_views (
+    view_id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
+    game_id INT NOT NULL REFERENCES games(game_id) ON DELETE RESTRICT,
+    viewer_id BIGINT NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    duration_sec INT NOT NULL CHECK (duration_sec > 0 AND duration_sec <= 86400),
+    is_live BOOLEAN DEFAULT false,
+    region CHAR(2) NOT NULL
+) PARTITION BY RANGE (start_time);
+
+-- Одна партиция для примера
+CREATE TABLE game_views_2024_01 PARTITION OF game_views
+    FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
+
+-- Опционально: уникальность в пределах партиции (если критично)
+-- CREATE UNIQUE INDEX ON game_views_2024_01 (view_id);
+
+-- 2. Таблица: viewer_feedback — может иметь внешний ключ, но без ON DELETE CASCADE на секционированную таблицу
+CREATE TABLE viewer_feedback (
+    feedback_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    view_id BIGINT NOT NULL,  -- Внешний ключ без ссылки (или с отложенной проверкой)
+    comment TEXT NOT NULL,
+    reactions TEXT[],
+    analytics_meta JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Индексы
+CREATE INDEX idx_feedback_view_id ON viewer_feedback (view_id);
+CREATE INDEX idx_comment_trgm ON viewer_feedback USING GIN (comment gin_trgm_ops);
+CREATE INDEX idx_reactions_gin ON viewer_feedback USING GIN (reactions);
+CREATE INDEX idx_analytics_meta_gin ON viewer_feedback USING GIN (analytics_meta);
